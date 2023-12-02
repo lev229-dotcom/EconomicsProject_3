@@ -1,0 +1,73 @@
+﻿@page "/"
+@using EconomicsProject_3_Core.Domain;
+
+<PageTitle>Index</PageTitle>
+
+<RadzenButton ButtonStyle="ButtonStyle.Success" Icon="add_circle_outline" class="mt-2 mb-4" Text="Добавить новую запись" Click="@InsertRow" Disabled=@(orderToInsert != null || orderToUpdate != null) />
+<MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles">
+    <ButtonTemplate>
+        <MudButton HtmlTag="label"
+                   Variant="MudBlazor.Variant.Filled"
+                   Color="Color.Primary"
+                   StartIcon="@Icons.Material.Filled.CloudUpload"
+                   for="@context.Id">
+            Загрузить записи из файла
+        </MudButton>
+    </ButtonTemplate>
+</MudFileUpload>
+<RadzenDataGrid @ref=ordersGrid AllowFiltering="true" AllowPaging="true" PageSize="5" AllowSorting="true" EditMode="Radzen.DataGridEditMode.Single"
+                Data="@assets" RowUpdate="@OnUpdateRow" RowCreate="@OnCreateRow" TItem="Asset" ColumnWidth="200px">
+    <Columns>
+        <RadzenDataGridColumn TItem="Asset" Property="Name" Title="Name" Width="120px" Frozen="true" >
+            <EditTemplate Context="asset">
+                <RadzenTextBox @bind-Value="asset.Name" Style="width:100%" />
+            </EditTemplate>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="Asset" Property="SellDate" Title="Дата продажи" Width="120px" Frozen="true" >
+            <EditTemplate Context="asset">
+                <RadzenDatePicker @bind-Value="asset.SellDate" Style="width:100%" />
+            </EditTemplate>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="Asset" Property="AssetCode" Title="Код товара" Width="120px" Frozen="true" >
+            <EditTemplate Context="asset">
+                <RadzenTextBox @bind-Value="asset.AssetCode" Style="width:100%" />
+            </EditTemplate>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="Asset" Property="Price" Title="Стоимость" Width="120px" Frozen="true" >
+            <EditTemplate Context="asset">
+                <RadzenNumeric @bind-Value="asset.Price" Style="width:100%" />
+            </EditTemplate>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="Asset" Property="ShopAddress" Title="Адрес магазина" Width="120px" Frozen="true" >
+            <EditTemplate Context="asset">
+                <RadzenTextBox @bind-Value="asset.ShopAddress" Style="width:100%" />
+            </EditTemplate>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="Asset" Property="Count" Title="Количество" Width="120px" Frozen="true" >
+            <EditTemplate Context="asset">
+                <RadzenNumeric @bind-Value="asset.Count" Style="width:100%" />
+            </EditTemplate>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="Asset" Property="CostPrice" Title="Себестоимость" Width="120px" Frozen="true" >
+            <EditTemplate Context="asset">
+                <RadzenNumeric @bind-Value="asset.CostPrice" Style="width:100%" />
+            </EditTemplate>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="Asset"  Context="asset" Filterable="false" Sortable="false" TextAlign="TextAlign.Right" Frozen="true">
+            <Template Context="asset">
+                <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Primary" Variant="Radzen.Variant.Outlined" Size="ButtonSize.Medium" Click="@(args => EditRow(asset))" @onclick:stopPropagation="true">
+                </RadzenButton>
+                <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Variant="Radzen.Variant.Outlined" Shade="Shade.Lighter" Size="ButtonSize.Medium" class="my-1 ms-1" Click="@(args => DeleteRow(asset))" @onclick:stopPropagation="true">
+                </RadzenButton>
+            </Template>
+            <EditTemplate Context="asset">
+                <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Success" Variant="Radzen.Variant.Outlined" Size="ButtonSize.Medium" Click="@((args) => SaveRow(asset))">
+                </RadzenButton>
+                <RadzenButton Icon="close" ButtonStyle="ButtonStyle.Secondary" Variant="Radzen.Variant.Outlined" Size="ButtonSize.Medium" class="my-1 ms-1" Click="@((args) => CancelEdit(asset))">
+                </RadzenButton>
+                <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Variant="Radzen.Variant.Outlined" Shade="Shade.Lighter" Size="ButtonSize.Medium" class="my-1 ms-1" Click="@(args => DeleteRow(asset))">
+                </RadzenButton>
+            </EditTemplate>
+        </RadzenDataGridColumn>
+    </Columns>
+</RadzenDataGrid>

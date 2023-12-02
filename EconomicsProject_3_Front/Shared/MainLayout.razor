@@ -1,0 +1,58 @@
+﻿@inherits LayoutComponentBase
+
+<MudThemeProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+<RadzenDialog />
+<RadzenNotification />
+<RadzenLayout>
+    <ChildContent>
+        <RadzenHeader>
+            <ChildContent>
+                <div class="row justify-content-start align-items-center">
+                    <div class="col-6 d-flex align-items-center">
+                        <RadzenSidebarToggle Click="@ToggleNavMenu">  </RadzenSidebarToggle>
+                        <RadzenLabel Text=""></RadzenLabel>
+                    </div>
+                    <div class="col-6 text-right">
+                    </div>
+                </div>
+            </ChildContent>
+        </RadzenHeader>
+
+        <RadzenBody @ref="body0">
+            <ChildContent>
+                <RadzenContentContainer Name="main">
+                    @Body
+                </RadzenContentContainer>
+            </ChildContent>
+        </RadzenBody>
+        <RadzenSidebar @ref="SideBar0">
+            <ChildContent>
+                <RadzenPanelMenu>
+                    <RadzenPanelMenuItem Text="Главная" Path="/"></RadzenPanelMenuItem>
+                </RadzenPanelMenu>
+            </ChildContent>
+        </RadzenSidebar>
+
+    </ChildContent>
+</RadzenLayout>
+
+@code {
+    private bool collapseNavMenu = true;
+
+    protected RadzenBody? body0;
+    protected RadzenSidebar? SideBar0;
+
+    protected async System.Threading.Tasks.Task ToggleNavMenu(dynamic args)
+    {
+        await InvokeAsync(() =>
+        {
+            SideBar0.Toggle();
+        });
+        await InvokeAsync(() =>
+        {
+            body0.Toggle();
+        });
+    }
+}

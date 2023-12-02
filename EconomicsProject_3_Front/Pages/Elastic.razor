@@ -1,0 +1,69 @@
+﻿@page "/elastic"
+
+<h3>Расчет эластичности</h3>
+<RadzenRow Gap="2rem" Class="rz-p-0 rz-p-lg-4">
+        <RadzenColumn Size="12" SizeMD="6">
+            <RadzenFieldset Text="Выберите первый актив">
+                <RadzenStack Gap="1rem">
+                    <RadzenRow AlignItems="Radzen.AlignItems.Center">
+                        <RadzenColumn Size="12" SizeMD="4">
+                            <RadzenLabel Text="Дата начала периода" />
+                        </RadzenColumn>
+                        <RadzenColumn Size="12" SizeMD="8">
+                            <RadzenDatePicker @bind-Value="startDateAsset1"></RadzenDatePicker>
+                        </RadzenColumn>
+                    </RadzenRow>
+                <RadzenRow AlignItems="Radzen.AlignItems.Center">
+                        <RadzenColumn Size="12" SizeMD="4">
+                            <RadzenLabel Text="Дата окончания периода" />
+                        </RadzenColumn>
+                        <RadzenColumn Size="12" SizeMD="8">
+                            <RadzenDatePicker @bind-Value="endDateAsset1"></RadzenDatePicker>
+                        </RadzenColumn>
+                    </RadzenRow>
+                <RadzenRow AlignItems="Radzen.AlignItems.Center">
+                        <RadzenColumn Size="12" SizeMD="4">
+                            <RadzenLabel Text="Название актива" />
+                        </RadzenColumn>
+                        <RadzenColumn Size="12" SizeMD="8">
+                        <RadzenDropDown @bind-Value="firstAssetId" Data="assets" TextProperty="Name" ValueProperty="AssetCode" Style="width: 100%;" Name="CardHolder" />
+                        </RadzenColumn>
+                    </RadzenRow>
+                </RadzenStack>
+            </RadzenFieldset>
+        </RadzenColumn>
+        <RadzenColumn Size="12" SizeMD="6">
+        <RadzenFieldset Text="Выберите второй актив">
+            <RadzenStack Gap="1rem">
+                <RadzenRow AlignItems="Radzen.AlignItems.Center">
+                    <RadzenColumn Size="12" SizeMD="4">
+                        <RadzenLabel Text="Дата начала периода" />
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="8">
+                        <RadzenDatePicker @bind-Value="startDateAsset2"></RadzenDatePicker>
+                    </RadzenColumn>
+                </RadzenRow>
+                <RadzenRow AlignItems="Radzen.AlignItems.Center">
+                    <RadzenColumn Size="12" SizeMD="4">
+                        <RadzenLabel Text="Дата окончания периода" />
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="8">
+                        <RadzenDatePicker @bind-Value="endDateAsset2"></RadzenDatePicker>
+                    </RadzenColumn>
+                </RadzenRow>
+                <RadzenRow AlignItems="Radzen.AlignItems.Center">
+                    <RadzenColumn Size="12" SizeMD="4">
+                        <RadzenLabel Text="Название актива" />
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="8">
+                        <RadzenDropDown @bind-Value="secondAssetId" Data="assets" TextProperty="Name" ValueProperty="AssetCode" Style="width: 100%;" Name="Название актива" />
+                    </RadzenColumn>
+                </RadzenRow>
+            </RadzenStack>
+        </RadzenFieldset>
+
+        </RadzenColumn>
+    </RadzenRow>
+<RadzenStack Orientation="Radzen.Orientation.Horizontal" JustifyContent="JustifyContent.Center" Gap="1rem" Class="rz-mt-8 rz-mb-4">
+    <RadzenButton ButtonType="Radzen.ButtonType.Submit" Size="ButtonSize.Large" Icon="save" Text="Расчитать эластичность" Click="CheckElastic" />
+</RadzenStack>

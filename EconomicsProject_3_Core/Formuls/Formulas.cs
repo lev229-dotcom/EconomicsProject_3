@@ -1,10 +1,11 @@
-﻿using System;
+﻿using EconomicsProject_3_Core.Domain;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EconomicsProject_3;
+namespace EconomicsProject_3_Core.Formuls;
 
 public class Formulas
 {
