@@ -72,12 +72,12 @@ public partial class Elastic
         sb.AppendLine($"Выручка за второй период: {Math.Round(secondAssetsStats.Sum(_ => _.Count * _.Price), 0)}₽");
         sb.Append("<br/>");
         sb.Append("<br/>");
-        sb.Append($"Эластичность = {elastic}");
+        sb.Append($"Эластичность = {Math.Abs(elastic)}");
         sb.Append("<br/>");
         sb.Append("<br/>");
         if (elastic < -1)
         {
-            message = $"Спрос эластичен. <br/>При снижении цены на 1% спрос будет увеличивается на {Math.Abs(elastic)}%. ";
+            message = $"Спрос эластичен. <br/>При снижении цены на 1% спрос будет увеличивается на {Math.Abs(elastic)}%. <br/>Для увеличения продаж необходимо понизить стоимость";
         }
         else if(elastic > 1)
         {
