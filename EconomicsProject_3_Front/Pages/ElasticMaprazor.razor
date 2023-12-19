@@ -1,0 +1,199 @@
+﻿@page "/elasticmap"
+@using System.Text
+
+<style>
+    /* Стили для тепловой карты */
+    .heatmap-container {
+        display: flex;
+        flex-wrap: wrap;
+        width: 300px;
+    }
+
+    .heatmap-cell {
+        display: grid;
+        place-items: center;
+        align-content: center;
+        width: 120px;
+        height: 120px;
+        border: 1px solid #ccc;
+        margin: -1px 0 0 -1px;
+    }
+</style>
+
+@functions {
+    // Функция, которая принимает лист из интеджеров и возвращает строку данных для тепловой карты
+    MarkupString GetHeatmapCells(decimal el, List<decimal> values,List<int> headers, List<int> headersLeft)
+    {
+        var heatmapCells = new StringBuilder();
+        heatmapCells.AppendLine("<br/><div style=\"display: flex;align-items: center;justify-content: center;\">");
+        heatmapCells.AppendLine($"<div class=\"heatmap-cell\">{el}</div>");
+        foreach (var value in headers)
+        {
+            heatmapCells.AppendLine($"<div class=\"heatmap-cell\">{value}</div>");
+        }
+        heatmapCells.AppendLine("</div>");
+            
+
+        var headerLeftElem = 0;
+        heatmapCells.AppendLine("<div style=\"display: flex;align-items: center;justify-content: center;\">");
+        heatmapCells.AppendLine($"<div class=\"heatmap-cell\">{headersLeft[0]}</div>");
+        foreach (var value in values.Select((value, i) => new { i, value }))
+        {
+            if (value.i is 3 or 6)
+            {
+                heatmapCells.AppendLine("<div style=\"display: flex;align-items: center;justify-content: center;\">");
+                heatmapCells.AppendLine($"<div class=\"heatmap-cell\">{headersLeft[headerLeftElem+1]}</div>");
+                headerLeftElem++;
+            }
+            // Ограничиваем значение в диапазоне от 0 до 100 (просто для примера)
+            var normalizedValue = Math.Max(0, Math.Min(100, value.value));
+
+            // Создаем стиль для ячейки в зависимости от значения
+            var cellStyle = $"background-color: hsl(240, 100%, {100 - normalizedValue}%);";
+
+            // Добавляем ячейку в строку данных
+            heatmapCells.AppendLine($"<div class=\"heatmap-cell\" style=\"{cellStyle}\">{value.value}</div>");
+            if (value.i is 2 or 5 or 8)
+            {
+                heatmapCells.AppendLine("</div>");
+            }
+        }
+        
+        
+
+        // Возвращаем строку как MarkupString
+        
+        
+        return new MarkupString(heatmapCells.ToString());
+    }
+    
+}
+
+<h3>Расчет эластичности с тепловой картой</h3>
+<RadzenRow Gap="2rem" Class="rz-p-0 rz-p-lg-4">
+        <RadzenColumn Size="12" SizeMD="6">
+            <RadzenFieldset Text="Выберите первый актив">
+                <RadzenStack Gap="1rem">
+                    <RadzenRow AlignItems="Radzen.AlignItems.Center">
+                        <RadzenColumn Size="12" SizeMD="4">
+                            <RadzenLabel Text="Дата начала периода" />
+                        </RadzenColumn>
+                        <RadzenColumn Size="12" SizeMD="8">
+                            <RadzenDatePicker @bind-Value="startDateAsset1"></RadzenDatePicker>
+                        </RadzenColumn>
+                    </RadzenRow>
+                <RadzenRow AlignItems="Radzen.AlignItems.Center">
+                        <RadzenColumn Size="12" SizeMD="4">
+                            <RadzenLabel Text="Дата окончания периода" />
+                        </RadzenColumn>
+                        <RadzenColumn Size="12" SizeMD="8">
+                            <RadzenDatePicker @bind-Value="endDateAsset1"></RadzenDatePicker>
+                        </RadzenColumn>
+                    </RadzenRow>
+                <RadzenRow AlignItems="Radzen.AlignItems.Center">
+                        <RadzenColumn Size="12" SizeMD="4">
+                            <RadzenLabel Text="Название актива" />
+                        </RadzenColumn>
+                        <RadzenColumn Size="12" SizeMD="8">
+                        <RadzenDropDown @bind-Value="firstAssetId" Data="assets" TextProperty="Name" ValueProperty="AssetCode" Style="width: 100%;" Name="CardHolder" />
+                        </RadzenColumn>
+                    </RadzenRow>
+                </RadzenStack>
+            </RadzenFieldset>
+        </RadzenColumn>
+        <RadzenColumn Size="12" SizeMD="6">
+        <RadzenFieldset Text="Выберите второй актив">
+            <RadzenStack Gap="1rem">
+                <RadzenRow AlignItems="Radzen.AlignItems.Center">
+                    <RadzenColumn Size="12" SizeMD="4">
+                        <RadzenLabel Text="Дата начала периода" />
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="8">
+                        <RadzenDatePicker @bind-Value="startDateAsset2"></RadzenDatePicker>
+                    </RadzenColumn>
+                </RadzenRow>
+                <RadzenRow AlignItems="Radzen.AlignItems.Center">
+                    <RadzenColumn Size="12" SizeMD="4">
+                        <RadzenLabel Text="Дата окончания периода" />
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="8">
+                        <RadzenDatePicker @bind-Value="endDateAsset2"></RadzenDatePicker>
+                    </RadzenColumn>
+                </RadzenRow>
+                <RadzenRow AlignItems="Radzen.AlignItems.Center">
+                    <RadzenColumn Size="12" SizeMD="4">
+                        <RadzenLabel Text="Название актива" />
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="8">
+                        <RadzenDropDown @bind-Value="secondAssetId" Data="assets" TextProperty="Name" ValueProperty="AssetCode" Style="width: 100%;" Name="Название актива" />
+                    </RadzenColumn>
+                </RadzenRow>
+            </RadzenStack>
+        </RadzenFieldset>
+
+        </RadzenColumn>
+        <RadzenColumn Size="12" SizeMD="12">
+                <RadzenFieldset Text="Укажите условие">
+                    <RadzenStack Gap="1rem">
+                        <RadzenRow AlignItems="Radzen.AlignItems.Center">
+                            <RadzenColumn Size="12" SizeMD="4">
+                                <RadzenLabel Text="Стоимость первая" Style="width: 100%;" />
+                                <br/>
+                                <br/>
+                                <RadzenLabel Text="Кол-во первая" Style="width: 100%;" />
+                            </RadzenColumn>
+                            <RadzenColumn Size="12" SizeMD="8">
+                                <RadzenNumeric @bind-Value="firstprice" Style="width: 100%;"></RadzenNumeric>
+                                <br/>
+                                <br/>
+                                <RadzenNumeric @bind-Value="firstquantity" Style="width: 100%;"></RadzenNumeric>
+                            </RadzenColumn>
+                        </RadzenRow>
+                        <br/>
+                        <RadzenRow AlignItems="Radzen.AlignItems.Center">
+                            <RadzenColumn Size="12" SizeMD="4">
+                                <RadzenLabel Text="Стоимость вторая" Style="width: 100%;" />
+                                <br/>
+                                <br/>
+                                <RadzenLabel Text="Кол-во вторая" Style="width: 100%;" />
+                            </RadzenColumn>
+                            <RadzenColumn Size="12" SizeMD="8">
+                                <RadzenNumeric @bind-Value="secondprice" Style="width: 100%;"></RadzenNumeric>
+                                <br/>
+                                <br/>
+                                <RadzenNumeric @bind-Value="secondquantity" Style="width: 100%;"></RadzenNumeric>
+                            </RadzenColumn>
+                        </RadzenRow>
+                        <br/>
+                        <RadzenRow AlignItems="Radzen.AlignItems.Center">
+                            <RadzenColumn Size="12" SizeMD="4">
+                                <RadzenLabel Text="Стоимость третья" Style="width: 100%;" />
+                                <br/>
+                                <br/>
+                                <RadzenLabel Text="Кол-во третья" Style="width: 100%;" />
+                            </RadzenColumn>
+                            <RadzenColumn Size="12" SizeMD="8">
+                                <RadzenNumeric @bind-Value="thirdprice" Style="width: 100%;"></RadzenNumeric>
+                                <br/>
+                                <br/>
+                                <RadzenNumeric @bind-Value="thirdquantity" Style="width: 100%;"></RadzenNumeric>
+                            </RadzenColumn>
+                        </RadzenRow>
+                        
+                        
+                    </RadzenStack>
+                </RadzenFieldset>
+        
+                </RadzenColumn>
+    </RadzenRow>
+<RadzenStack Orientation="Radzen.Orientation.Horizontal" JustifyContent="JustifyContent.Center" Gap="1rem" Class="rz-mt-8 rz-mb-4">
+    <RadzenButton ButtonType="Radzen.ButtonType.Submit" Size="ButtonSize.Large" Icon="save" Text="Расчитать эластичность" Click="CheckElasticMap" />
+</RadzenStack>
+<RadzenRow>
+    @* Don't forget to Style="display: none" *@
+    <RadzenFieldset Text="Результат" Style="width: 100%">
+        <RadzenColumn Size="12" SizeMD="4">
+        @((MarkupString)heatMapAndCalculations)
+        </RadzenColumn>
+    </RadzenFieldset>
+</RadzenRow>
