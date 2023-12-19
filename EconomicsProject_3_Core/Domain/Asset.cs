@@ -31,4 +31,6 @@ public class Asset
 
     [Name(nameof(CostPrice))]
     public decimal CostPrice { get; set; }
+
+    public decimal TotalOrderAmount => Price * Count;
 }

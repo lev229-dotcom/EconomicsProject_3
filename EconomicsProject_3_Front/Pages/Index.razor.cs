@@ -170,5 +170,6 @@ public sealed class AssetMap : ClassMap<Asset>
     {
         AutoMap(CultureInfo.InvariantCulture);
         Map(m => m.Id).Ignore();
+        Map(m => m.TotalOrderAmount).Ignore();
     }
 }
