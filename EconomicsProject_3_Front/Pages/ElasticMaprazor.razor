@@ -22,7 +22,7 @@
 
 @functions {
     // Функция, которая принимает лист из интеджеров и возвращает строку данных для тепловой карты
-    MarkupString GetHeatmapCells(decimal el, List<decimal> values,List<int> headers, List<int> headersLeft)
+    MarkupString GetHeatmapCells(decimal el, List<decimal> values,List<decimal> marjList, List<int> headers, List<int> headersLeft)
     {
         var heatmapCells = new StringBuilder();
         heatmapCells.AppendLine("<br/><div style=\"display: flex;align-items: center;justify-content: center;\">");
@@ -52,7 +52,7 @@
             var cellStyle = $"background-color: hsl(240, 100%, {100 - normalizedValue}%);";
 
             // Добавляем ячейку в строку данных
-            heatmapCells.AppendLine($"<div class=\"heatmap-cell\" style=\"{cellStyle}\">{value.value}</div>");
+            heatmapCells.AppendLine($"<div class=\"heatmap-cell\" style=\"{cellStyle}\">{value.value}/{marjList[value.i]}%</div>");
             if (value.i is 2 or 5 or 8)
             {
                 heatmapCells.AppendLine("</div>");

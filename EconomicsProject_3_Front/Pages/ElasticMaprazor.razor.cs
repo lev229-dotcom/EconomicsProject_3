@@ -32,6 +32,7 @@ public partial class ElasticMaprazor
     [Inject] DataContextService dataContextService { get; set; }
     [Inject] DialogService dialogService { get; set; }
 
+    
     protected override async Task OnInitializedAsync()
     {
         //var query = await dataContextService.GetDataContext().Assets.ToListAsync();
@@ -48,6 +49,65 @@ public partial class ElasticMaprazor
             .Select(_ => _.OrderBy(a => a.AssetCode).First()).ToListAsync();
 
 
+    }
+    
+    int FindIndex(int target)
+    {
+        int res = 0;
+        switch (target)
+        {
+            case 0: res = 0;
+            break;
+            case 1: res = 1;
+                break;
+            case 2: res = 2;
+                break;
+            case 3: res = 0;
+                break;
+            case 4: res = 1;
+                break;
+            case 5: res = 2;
+                break;
+            case 6: res = 0;
+                break;
+            case 7: res = 1;
+                break;
+            case 8: res = 2;
+                break;
+            default:
+                res = 0;
+                break;
+        };
+        return res;
+    }
+    int FindIndex2(int target)
+    {
+        int res = 0;
+        switch (target)
+        {
+            case 0: res = 0;
+                break;
+            case 1: res = 0;
+                break;
+            case 2: res = 0;
+                break;
+            case 3: res = 1;
+                break;
+            case 4: res = 1;
+                break;
+            case 5: res = 1;
+                break;
+            case 6: res = 2;
+                break;
+            case 7: res = 2;
+                break;
+            case 8: res = 2;
+                break;
+            default:
+                res = 0;
+                break;
+        };
+        return res;
     }
 
     async Task CheckElasticMap()
@@ -79,7 +139,9 @@ public partial class ElasticMaprazor
         var sb = new StringBuilder();
         
         
-        
+        var viruchka1 = Math.Round(firstAssetsStats.Sum(_ => _.Count * _.Price), 0);
+        var sebestoimosti = Math.Round(secondAssetsStats.Sum(_ => _.CostPrice), 0);
+        var viruchka2 = Math.Round(secondAssetsStats.Sum(_ => _.Count * _.Price), 0);
         
         sb.AppendLine("<div>Резултат расчета эластичности");
         sb.Append("<br/>");
@@ -99,6 +161,8 @@ public partial class ElasticMaprazor
 
         List<decimal> heatmapValues = new List<decimal>();
 
+        List<decimal> marjinalValues = new List<decimal>();
+
         List<int> heatmapHeaders = new List<int> { firstquantity, secondquantity, thirdquantity };
 
         List<int> heatmapLeftHeaders = new List<int> { firstprice, secondprice, thirdprice };
@@ -107,13 +171,38 @@ public partial class ElasticMaprazor
         {
             for (int j = 0; j < 3; j++)
             {
+                var viruchkaP = heatmapLeftHeaders[i] * heatmapHeaders[j];
                 heatmapValues.Add(Math.Round((price2 - heatmapLeftHeaders[i]) / (count2 - heatmapHeaders[j]),2));
+                marjinalValues.Add(Math.Round(((viruchkaP - sebestoimosti)/viruchkaP * 100), 2));
             }
         }
         
-        sb.Append(GetHeatmapCells(elastic, heatmapValues, heatmapHeaders, heatmapLeftHeaders));
-                
+        sb.Append(GetHeatmapCells(elastic, heatmapValues, marjinalValues, heatmapHeaders, heatmapLeftHeaders));
 
+        var sb2 = new StringBuilder();
+
+        var elastic_max = heatmapValues.Max();
+        var elastic_max_index = heatmapValues.IndexOf(elastic_max);
+        
+            
+        var marjinal_max = marjinalValues.Max();
+        var marjinal_max_index = marjinalValues.IndexOf(marjinal_max);
+        
+
+
+        var header_index = FindIndex(elastic_max_index);
+        var header_left_index = FindIndex2(elastic_max_index);
+        var header_marjinal_index = FindIndex(marjinal_max_index);
+        var header_left_marjinal_index = FindIndex2(marjinal_max_index);
+        sb2.AppendLine(
+            $"Самая большая эластичность ({elastic_max}) будет при количестве равной {heatmapHeaders[header_index]}, и стоимости равной {heatmapLeftHeaders[header_left_index]}</br>");
+        sb2.AppendLine($"Самая большая маржа ({marjinal_max}%) будет при количестве равной {heatmapHeaders[header_marjinal_index]} и стоимости равной {heatmapLeftHeaders[header_left_marjinal_index]}");
+
+
+        sb.Append("</br><div>");
+        sb.Append(sb2);
+        sb.Append("</div>");
+        
         heatMapAndCalculations = sb.ToString();
 
     }
